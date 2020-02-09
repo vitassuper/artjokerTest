@@ -9,10 +9,9 @@ class ServerRequest {
 
     public function __construct(){
        $this->requestType=$_SERVER["REQUEST_METHOD"];
-    }
-
-    public function requestData(){
-        return $_REQUEST;
+       foreach($_REQUEST as $key => $value){
+        $this->{$key} = $value;
+      }
     }
     
     public function requestUri(){

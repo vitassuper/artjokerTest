@@ -4,8 +4,9 @@ namespace application\core;
 
 use application\core\views\HtmlView;
 
-use applicaton\core\Route;
+use application\exceptions\NotFoundException;
 
+use applicaton\core\Route;
 
 
 class Dispatcher{
@@ -18,10 +19,6 @@ class Dispatcher{
         $this->router=$router;
     }
 
-    public static function ErrorCode(){
-        HtmlView::errorCode(404);
-    }
-
     public function dispatch($request){
         try{
            $this->route=$this->router->findRoute($request);
@@ -32,7 +29,7 @@ class Dispatcher{
            $controller = new $controller(new $model(), $view, $request, $this->route->params);
            $controller->$action();
         }catch(NotFoundException $exception){
-            View::error();
+            HtmlView::errorCode(404);
         }
     }
 }

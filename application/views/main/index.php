@@ -15,10 +15,4 @@
 
 </table>
 
-
-<select data-placeholder="Your Favorite Type of Bear" class="chosen-select" tabindex="7">
-    <option>Choose have</option>
-    <option>Choose 2</option>
-    <option>Choose 3</option>
-</select>
 <script src="/application\views\layouts\js\index.js"></script>

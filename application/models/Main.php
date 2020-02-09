@@ -3,6 +3,7 @@
 namespace application\models;
 
 use application\core\Model;
+use application\exceptions\NotFoundException;
 
 class Main extends Model{
 
@@ -11,8 +12,10 @@ class Main extends Model{
     }
    
     public function getUsers(){
-       $users = $this->db->row('SELECT users.*, t_koatuu_tree.ter_address  FROM `users` INNER JOIN `t_koatuu_tree` ON  users.terr_id = t_koatuu_tree.ter_id');
-       return $users;
+        $users = $this->db->row('SELECT users.*, t_koatuu_tree.ter_address  FROM `users` INNER JOIN `t_koatuu_tree` ON  users.terr_id = t_koatuu_tree.ter_id');
+        $obj = new stdClass;
+        var_dump($obj);
+        return $users;
     }
 
     public function createUser($name, $email, $terr_id){
@@ -27,6 +30,9 @@ class Main extends Model{
 
     public function getUser($id){
         $user = $this->db->row("SELECT users.*, t_koatuu_tree.ter_address  FROM `users` INNER JOIN `t_koatuu_tree` ON  users.terr_id = t_koatuu_tree.ter_id WHERE users.id='$id'");
-       return $user;
+       if(!$user){
+           throw new NotFoundException();
+       }
+        return $user;
     }
 }
