@@ -4,7 +4,6 @@ $(document).ready(function () {
   getReg('null');
 });
 
-
 function getUsers() {
   $.ajax({
     method: 'GET',
@@ -60,19 +59,19 @@ function getReg(pid) {
     success: function (response) {
       if (response.message.length != 0) {
         var level = response.message[0].ter_level;
-        $('.selects').append('<select class="chosen-select" tabindex="7" name="reg" id=' + level + '></select>');
+        $('.selects').append('<select class="chosen-select" name="reg" id=' + level + '></select>');
         $('#' + level).append('<option value="none" hidden="">Выберите место</option>');
         response.message.forEach(reg => {
           $('#' + level).append('<option value="' + reg.ter_id + '">' + reg.ter_name + '</option>');
         });
       }
-      $(".chosen-select").chosen();
+      $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"})
     },
   });
 }
 
 $('.selects').change(function (e) {
-  $('.selects').find('span').remove();
+  $('.selects').find('.error').remove();
   for (i = 4; i > e.target.id; i--) {
     $('.selects').find('#' + i).remove();
 
