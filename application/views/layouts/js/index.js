@@ -1,101 +1,83 @@
-
-$(document).ready(function () {
-  getUsers();
+$(document).ready(() => {
   getReg('null');
+  getUsers();
 });
 
-function getUsers() {
+const getUsers = () => {
   $.ajax({
-    method: 'GET',
     url: 'api/users',
-    dataType: "json",
-    success: function (response) {
-      var str = '';
-      response.message.forEach(user => {
-        str += "<tr>";
-        str += '<td>' + user.id + '</td>';
-        str += '<td>' + user.name + '</td>';
-        str += '<td>' + user.email + '</td>';
-        str += '<td>' + user.ter_address + '</td>';
-        str += '</tr>';
-        $('#users').html(str);
-      });
+    dataType: 'json',
+    success: (response) => {
+      response.message.length ? $('#content').html(`<table>${response.message.map(user =>
+        `<tr>${`<td>${user.id}</td><td>${user.name}</td><td>${user.email}</td><td>${user.ter_address}</td>`}</tr>`).join('')}</table>`) : $('#content').html('<strong>Список пуст</strong>');
     },
   });
 }
 
-$('#form').submit(function (e) {
+$('#form').submit((e) =>{
+  e.preventDefault();
+  $('.error').remove();
   var data = {};
   var error = false;
-  $(".error").remove();
-  e.preventDefault();
   $('#form').find('input,select').each(function () {
     data[this.name] = $(this).val();
   });
-  var regEx = /^[a-z0-9_-]+@[a-z0-9-]+\.[a-z]{2,6}$/;
-  if (!regEx.test(data.email)) {
-    $(this).find('#email').after('<span class="error">Ошибка</span>');
-    error = true;
+  const regEx = /^[a-z0-9_-]+@[a-z0-9-]+\.[a-z]{2,6}$/;
+  if (!data.name.length || data.name.length > 255) {
+    $(e.target).find('#name').after('<span class="error">Неверное ФИО</span>');
+    error=true;
   }
-  if (data.name.length == 0 || data.name.length > 255) {
-    $(this).find('#name').after('<span class="error">Ошибка</span>');
-    error = true;
+  if (!regEx.test($(e.target.email).val())) {
+    $(e.target).find('#email').after('<span class="error">Неверный email</span>');
+    error=true;
   }
-  if (data.reg == "none") {
-    $('select option:selected[value="none"]').parent().after('<span class="error">Ошибка</span>');
-    error = true;
+  if (data.reg == 'none') {
+    $('select option:selected[value="none"]').parent().next().after('<span class="error">Error</span>');
+    error=true;
   }
-  if (!error)
+  if (!error){
     register(data.name, data.email, data.reg);
+    e.target.reset();
+  }
 });
 
-
-function getReg(pid) {
+const getReg = (pid) => {
   $.ajax({
-    method: 'GET',
     url: 'api/regions',
-    data: { 'pid': pid },
-    dataType: "json",
-    success: function (response) {
-      if (response.message.length != 0) {
-        var level = response.message[0].ter_level;
-        $('.selects').append('<select class="chosen-select" name="reg" id=' + level + '></select>');
-        $('#' + level).append('<option value="none" hidden="">Выберите место</option>');
+    data: { pid },
+    dataType: 'json',
+    success: (response) => {
+      if (response.message.length) {
+        $('.selects').append(`<select class="chosen-select" name="reg"></select>`);
+        $(`.chosen-select`).append('<option value="none">Выберите место</option>');
         response.message.forEach(reg => {
-          $('#' + level).append('<option value="' + reg.ter_id + '">' + reg.ter_name + '</option>');
+          $(`.chosen-select`).append(`<option value="${reg.ter_id}">${reg.ter_name}</option>`);
         });
+        $('.chosen-select').chosen({ no_results_text: 'Oops, nothing found!' });
       }
-      $(".chosen-select").chosen({no_results_text: "Oops, nothing found!"})
     },
   });
 }
 
-$('.selects').change(function (e) {
+$('.selects').change((e) => {
   $('.selects').find('.error').remove();
-  for (i = 4; i > e.target.id; i--) {
-    $('.selects').find('#' + i).remove();
-
-  }
+  $( e.target ).next().nextAll('.chosen-select, .chosen-container').remove();
   getReg(e.target.value);
 });
 
-
-function register(name, email, reg_id) {
+const register = (name, email, terr_id) => {
   $.ajax({
     method: 'POST',
     url: 'api/user/create',
-    dataType: "json",
+    dataType: 'json',
     data: {
-      'name': name,
-      'email': email,
-      'terr_id': reg_id
+      name, email, terr_id
     },
-    success: function (response) {
+    success: (response) => {
       if (response.message.id) {
-        $(location).attr('href', 'http://artjoker/user/' + response.message.id);
+        $(location).attr('href', `api/user/${response.message.id}`);
       }
       getUsers();
     },
   });
-
 }

@@ -10,7 +10,7 @@ return [
         'action' =>'form',
         'api'=>'true',
     ],
-    'user/{id:\d+}'=>[
+    'api/user/{id:\d+}'=>[
         'controller'=>'main',
         'action'=>'user',
     ],

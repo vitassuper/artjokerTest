@@ -12,9 +12,7 @@ class Main extends Model{
     }
    
     public function getUsers(){
-        $users = $this->db->row('SELECT users.*, t_koatuu_tree.ter_address  FROM `users` INNER JOIN `t_koatuu_tree` ON  users.terr_id = t_koatuu_tree.ter_id');
-        $obj = new stdClass;
-        var_dump($obj);
+        $users = $this->db->row('SELECT users.id, users.name, users.email, t_koatuu_tree.ter_address  FROM `users` INNER JOIN `t_koatuu_tree` ON  users.terr_id = t_koatuu_tree.ter_id');
         return $users;
     }
 
